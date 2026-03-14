@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Segmentation Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+/* ============================================================
+   CUSTOMER SEGMENTATION DASHBOARD — STYLESHEET
+   Design: Dark analytical theme, refined & data-focused
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0f14;
+  --surface: #13161e;
+  --surface2: #1a1e28;
+  --surface3: #22273a;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaf0;
+  --text-muted: #7a8099;
+  --text-dim: #4a5068;
+  --accent: #6ee7b7;
+  --accent2: #60a5fa;
+  --accent3: #d8b4fe;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'Space Mono', monospace;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.5);
+  --nav-h: 60px;
+  --sidebar: 0px;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===================== NAVBAR ===================== */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(13,15,20,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 40px;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.brand-icon {
+  font-size: 20px;
+  color: var(--accent);
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(110,231,183,0.5));
+}
+
+.brand-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.nav-link:hover { color: var(--text); background: var(--surface2); }
+.nav-link.active { color: var(--accent); background: rgba(110,231,183,0.1); }
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: auto;
+}
+
+/* ===================== MAIN ===================== */
+.main-content {
+  margin-top: var(--nav-h);
+  padding: 32px 28px;
+  max-width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: calc(var(--nav-h) + 32px);
+}
+
+.section { display: none; animation: fadeUp 0.4s ease both; }
+.section.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===================== SECTION HEADER ===================== */
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.section-sub {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.badge-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(110,231,183,0.1);
+  border: 1px solid rgba(110,231,183,0.25);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+.pulse {
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(110,231,183,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(110,231,183,0); }
+}
+
+/* ===================== STAT CARDS ===================== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+  cursor: default;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.6;
+  transition: opacity var(--transition);
+}
+
+.stat-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.stat-card:hover::before { opacity: 1; }
+
+.stat-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+  filter: grayscale(0.2);
+}
+
+.stat-body { flex: 1; min-width: 0; }
+
+.stat-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  display: block;
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.stat-trend {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.stat-trend.up { color: #6ee7b7; background: rgba(110,231,183,0.12); }
+.stat-trend.down { color: #f87171; background: rgba(248,113,113,0.12); }
+.stat-trend.neutral { color: var(--text-muted); background: var(--surface2); }
+
+/* ===================== CHART GRID ===================== */
+.chart-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.chart-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.chart-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.chart-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.chart-card.span-wide { grid-column: 1 / -1; }
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.chart-header h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.chart-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 200px;
+}
+
+.chart-wrap.tall { height: 280px; }
+
+.chart-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ===================== PREDICT SECTION ===================== */
+.predict-layout {
+  display: grid;
+  grid-template-columns: 480px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.predict-form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+
+.form-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.predict-form { display: flex; flex-direction: column; gap: 14px; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.form-group input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-group input::placeholder { color: var(--text-dim); }
+
+.form-group input:focus {
+  border-color: rgba(110,231,183,0.4);
+  box-shadow: 0 0 0 3px rgba(110,231,183,0.08);
+}
+
+/* Hide number input arrows */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+input[type=number] { -moz-appearance: textfield; }
+
+.predict-btn {
+  margin-top: 8px;
+  background: linear-gradient(135deg, rgba(110,231,183,0.2), rgba(96,165,250,0.2));
+  border: 1px solid rgba(110,231,183,0.35);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 24px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all var(--transition);
+  letter-spacing: 0.02em;
+}
+
+.predict-btn:hover {
+  background: linear-gradient(135deg, rgba(110,231,183,0.3), rgba(96,165,250,0.3));
+  border-color: rgba(110,231,183,0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(110,231,183,0.15);
+}
+
+.predict-btn:active { transform: translateY(0); }
+
+.btn-icon { font-size: 16px; transition: transform var(--transition); }
+.predict-btn:hover .btn-icon { transform: translateX(4px); }
+
+/* Result Area */
+.predict-result-area { display: flex; flex-direction: column; gap: 16px; }
+
+.result-placeholder {
+  background: var(--surface);
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 40px 28px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.placeholder-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.6; }
+
+.result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  animation: fadeUp 0.4s ease both;
+}
+
+.result-card.hidden { display: none; }
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.result-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.result-cluster-num {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.result-divider {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 20px;
+}
+
+.result-segment-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.result-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.result-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.trait-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  color: var(--text-muted);
+  background: var(--surface2);
+}
+
+/* Cluster Legend */
+.cluster-legend {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+
+.legend-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.legend-dot {
+  width: 10px; height: 10px;
+  background: var(--c);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+  box-shadow: 0 0 6px var(--c);
+}
+
+.legend-item strong { color: var(--text); display: block; font-size: 12px; }
+
+/* ===================== INSIGHTS ===================== */
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.insight-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.insight-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.accent-green { border-bottom-color: rgba(110,231,183,0.4); }
+.accent-green::after { background: #6ee7b7; }
+.accent-red { border-bottom-color: rgba(248,113,113,0.4); }
+.accent-red::after { background: #f87171; }
+.accent-blue { border-bottom-color: rgba(96,165,250,0.4); }
+.accent-blue::after { background: #60a5fa; }
+.accent-purple { border-bottom-color: rgba(216,180,254,0.4); }
+.accent-purple::after { background: #d8b4fe; }
+.accent-yellow { border-bottom-color: rgba(251,191,36,0.4); }
+.accent-yellow::after { background: #fbbf24; }
+.accent-orange { border-bottom-color: rgba(251,146,60,0.4); }
+.accent-orange::after { background: #fb923c; }
+
+.insight-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border2);
+  box-shadow: var(--shadow);
+}
+
+.insight-icon { font-size: 28px; margin-bottom: 12px; }
+
+.insight-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.insight-card p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.insight-metric {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.insight-metric span { color: var(--text); font-weight: 700; }
+
+/* Model Performance */
+.model-perf-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+}
+
+.model-perf-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.perf-metrics { display: flex; flex-direction: column; gap: 16px; }
+
+.perf-item {
+  display: grid;
+  grid-template-columns: 200px 1fr 80px;
+  align-items: center;
+  gap: 16px;
+}
+
+.perf-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.perf-bar-wrap {
+  background: var(--surface2);
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.perf-bar {
+  height: 100%;
+  width: var(--w);
+  background: var(--c);
+  border-radius: 3px;
+  animation: barGrow 1.2s cubic-bezier(0.4,0,0.2,1) both;
+  animation-delay: 0.3s;
+}
+
+@keyframes barGrow {
+  from { width: 0; }
+  to   { width: var(--w); }
+}
+
+.perf-val {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: right;
+}
+
+/* ===================== SCROLLBAR ===================== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 1200px) {
+  .insights-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .chart-grid.cols-3 { grid-template-columns: repeat(2, 1fr); }
+  .predict-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 900px) {
+  .main-content { padding: 80px 16px 24px; }
+  .chart-grid.cols-2 { grid-template-columns: 1fr; }
+  .chart-grid.cols-3 { grid-template-columns: 1fr; }
+  .perf-item { grid-template-columns: 1fr; gap: 6px; }
+  .perf-val { text-align: left; }
+  .brand-name { display: none; }
+}
+
+@media (max-width: 680px) {
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .insights-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .legend-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .nav-toggle { display: block; }
+  .navbar.menu-open .nav-links {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: var(--nav-h);
+    left: 0; right: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 400px) {
+  .stat-grid { grid-template-columns: 1fr; }
+}
+
+/* ===================== UTILITY ===================== */
+.hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">⬡</span>
+      <span class="brand-name">Customer Segmentation Dashboard</span>
+    </div>
+    <ul class="nav-links">
+      <!-- <li><a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a></li> -->
+      <li><a href="#predict" class="nav-link" data-section="predict">Predict Customer</a></li>
+      <!-- <li><a href="#insights" class="nav-link" data-section="insights">Insights</a></li> -->
+    </ul>
+    <button class="nav-toggle" id="navToggle">&#9776;</button>
+  </nav>
+
+  <main class="main-content">
+
+    <!-- DASHBOARD -->
+    <!-- <section id="dashboard" class="section ">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Overview</h1>
+          <p class="section-sub">K-Means Clustering · 6 Segments · 2,240 Customers</p>
+        </div>
+        <div class="badge-live"><span class="pulse"></span>Live Model</div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card" style="--accent:#6ee7b7">
+          <div class="stat-icon">👥</div>
+          <div class="stat-body">
+            <span class="stat-label">Total Customers</span>
+            <span class="stat-value" data-count="2240">0</span>
+          </div>
+          <div class="stat-trend up">↑ 12%</div>
+        </div>
+        <div class="stat-card" style="--accent:#93c5fd">
+          <div class="stat-icon">💰</div>
+          <div class="stat-body">
+            <span class="stat-label">Average Income</span>
+            <span class="stat-value" data-prefix="$" data-count="52384">0</span>
+          </div>
+          <div class="stat-trend up">↑ 4.3%</div>
+        </div>
+        <div class="stat-card" style="--accent:#fca5a5">
+          <div class="stat-icon">🛒</div>
+          <div class="stat-body">
+            <span class="stat-label">Average Spending</span>
+            <span class="stat-value" data-prefix="$" data-count="605">0</span>
+          </div>
+          <div class="stat-trend down">↓ 2.1%</div>
+        </div>
+        <div class="stat-card" style="--accent:#d8b4fe">
+          <div class="stat-icon">🔬</div>
+          <div class="stat-body">
+            <span class="stat-label">Number of Clusters</span>
+            <span class="stat-value" data-count="6">0</span>
+          </div>
+          <div class="stat-trend neutral">Optimal K</div>
+        </div>
+      </div>
+
+      <div class="chart-grid cols-3">
+        <div class="chart-card">
+          <div class="chart-header"><h3>Age Distribution</h3><span class="chart-tag">Histogram</span></div>
+          <div class="chart-wrap"><canvas id="ageChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header"><h3>Income Distribution</h3><span class="chart-tag">Histogram</span></div>
+          <div class="chart-wrap"><canvas id="incomeChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header"><h3>Spending Distribution</h3><span class="chart-tag">Histogram</span></div>
+          <div class="chart-wrap"><canvas id="spendingChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="chart-grid cols-2">
+        <div class="chart-card">
+          <div class="chart-header"><h3>Avg Spending by Education</h3><span class="chart-tag">Bar</span></div>
+          <div class="chart-wrap"><canvas id="educationChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header"><h3>Campaign Acceptance by Marital Status</h3><span class="chart-tag">Bar</span></div>
+          <div class="chart-wrap"><canvas id="maritalChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="chart-grid cols-2">
+        <div class="chart-card span-wide">
+          <div class="chart-header"><h3>Income vs Total Spending</h3><span class="chart-tag">Scatter</span></div>
+          <div class="chart-wrap tall"><canvas id="scatterChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="chart-grid cols-2">
+        <div class="chart-card">
+          <div class="chart-header"><h3>Customer Distribution by Cluster</h3><span class="chart-tag">Pie</span></div>
+          <div class="chart-wrap"><canvas id="clusterPieChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header"><h3>PCA Cluster Visualization</h3><span class="chart-tag">Scatter · PCA</span></div>
+          <div class="chart-wrap"><canvas id="pcaChart"></canvas></div>
+        </div>
+      </div>
+    </section> -->
+
+    <!-- PREDICT -->
+    <section id="predict" class="section active">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Predict Customer</h1>
+          <p class="section-sub">Enter customer attributes to classify into a segment</p>
+        </div>
+      </div>
+      <div class="predict-layout">
+        <div class="predict-form-card">
+          <h3 class="form-title">Customer Attributes</h3>
+          <form id="predictForm" class="predict-form">
+            <div class="form-row">
+              <div class="form-group"><label>Age</label><input type="number" id="inp-age" placeholder="e.g. 35" min="18" max="100" /></div>
+              <div class="form-group"><label>Annual Income ($)</label><input type="number" id="inp-income" placeholder="e.g. 55000" min="0" /></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Total Spending ($)</label><input type="number" id="inp-spending" placeholder="e.g. 800" min="0" /></div>
+              <div class="form-group"><label>Recency (days)</label><input type="number" id="inp-recency" placeholder="e.g. 30" min="0" /></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Web Purchases</label><input type="number" id="inp-web" placeholder="e.g. 5" min="0" /></div>
+              <div class="form-group"><label>Store Purchases</label><input type="number" id="inp-store" placeholder="e.g. 7" min="0" /></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group full"><label>Web Visits / Month</label><input type="number" id="inp-visits" placeholder="e.g. 4" min="0" /></div>
+            </div>
+            <button type="button" id="predictBtn" class="predict-btn">
+              <span class="btn-text">Predict Segment</span>
+              <span class="btn-icon">→</span>
+            </button>
+          </form>
+        </div>
+        <div class="predict-result-area">
+          <div id="resultPlaceholder" class="result-placeholder">
+            <div class="placeholder-icon">🎯</div>
+            <p>Fill in the form and click <strong>Predict Segment</strong> to classify this customer.</p>
+          </div>
+          <div id="resultCard" class="result-card hidden">
+            <div class="result-header">
+              <span class="result-label">Predicted Cluster</span>
+              <span id="resultClusterNum" class="result-cluster-num">—</span>
+            </div>
+            <div class="result-divider"></div>
+            <div class="result-segment-name" id="resultSegmentName">—</div>
+            <div class="result-desc" id="resultDesc">—</div>
+            <div class="result-traits" id="resultTraits"></div>
+          </div>
+          <div class="cluster-legend">
+            <h4 class="legend-title">Cluster Reference</h4>
+            <div class="legend-grid">
+              <div class="legend-item" style="--c:#6ee7b7"><span class="legend-dot"></span><div><strong>Cluster 0</strong><br/>Low spending customers</div></div>
+              <div class="legend-item" style="--c:#fbbf24"><span class="legend-dot"></span><div><strong>Cluster 1</strong><br/>High value customers</div></div>
+              <div class="legend-item" style="--c:#f87171"><span class="legend-dot"></span><div><strong>Cluster 2</strong><br/>Inactive customers</div></div>
+              <div class="legend-item" style="--c:#60a5fa"><span class="legend-dot"></span><div><strong>Cluster 3</strong><br/>Mid income active customers</div></div>
+              <div class="legend-item" style="--c:#c084fc"><span class="legend-dot"></span><div><strong>Cluster 4</strong><br/>Premium customers</div></div>
+              <div class="legend-item" style="--c:#fb923c"><span class="legend-dot"></span><div><strong>Cluster 5</strong><br/>Older moderate spenders</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INSIGHTS -->
+    <section id="insights" class="section">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Insights</h1>
+          <p class="section-sub">Key findings from the segmentation model</p>
+        </div>
+      </div>
+      <div class="insights-grid">
+        <div class="insight-card accent-green">
+          <div class="insight-icon">💎</div>
+          <h3>High Value & Premium Segments</h3>
+          <p>Clusters 1 and 4 represent ~28% of customers but contribute over 61% of total revenue. Prioritize retention campaigns for these segments.</p>
+          <div class="insight-metric"><span>28%</span> of customers · <span>61%</span> revenue</div>
+        </div>
+        <div class="insight-card accent-red">
+          <div class="insight-icon">⚠️</div>
+          <h3>Inactive Customer Risk</h3>
+          <p>Cluster 2 (Inactive) has an average recency of 74 days and very low web/store engagement. Targeted re-engagement emails could recover ~15% of this segment.</p>
+          <div class="insight-metric">Avg Recency: <span>74 days</span></div>
+        </div>
+        <div class="insight-card accent-blue">
+          <div class="insight-icon">📈</div>
+          <h3>Mid Income Growth Opportunity</h3>
+          <p>Cluster 3 customers show high web activity (avg 6.2 visits/month) but moderate spend. Cross-sell digital products to convert them to higher-value segments.</p>
+          <div class="insight-metric">Web Visits: <span>6.2/mo</span></div>
+        </div>
+        <div class="insight-card accent-purple">
+          <div class="insight-icon">🧓</div>
+          <h3>Older Moderate Spenders</h3>
+          <p>Cluster 5 (age 55–70) prefers in-store shopping with low web engagement. Brick-and-mortar promotions and loyalty cards are most effective for this group.</p>
+          <div class="insight-metric">Age Range: <span>55–70</span></div>
+        </div>
+        <div class="insight-card accent-yellow">
+          <div class="insight-icon">🎓</div>
+          <h3>Education & Spending Correlation</h3>
+          <p>PhD and Master's degree holders average $847 spending — 2.1× more than Basic educated customers. Education is a strong predictor for high-tier cluster membership.</p>
+          <div class="insight-metric">PhD avg: <span>$847</span> vs Basic: <span>$403</span></div>
+        </div>
+        <div class="insight-card accent-orange">
+          <div class="insight-icon">💑</div>
+          <h3>Marital Status & Campaigns</h3>
+          <p>Married customers show the highest campaign acceptance rate at 34%, followed by Together (29%). Single customers are least responsive at 19%.</p>
+          <div class="insight-metric">Married acceptance: <span>34%</span></div>
+        </div>
+      </div>
+      <div class="model-perf-card">
+        <h3>Model Performance Metrics</h3>
+        <div class="perf-metrics">
+          <div class="perf-item">
+            <span class="perf-label">Silhouette Score</span>
+            <div class="perf-bar-wrap"><div class="perf-bar" style="--w:73%;--c:#6ee7b7"></div></div>
+            <span class="perf-val">0.73</span>
+          </div>
+          <div class="perf-item">
+            <span class="perf-label">Inertia (WCSS)</span>
+            <div class="perf-bar-wrap"><div class="perf-bar" style="--w:61%;--c:#93c5fd"></div></div>
+            <span class="perf-val">12,481</span>
+          </div>
+          <div class="perf-item">
+            <span class="perf-label">Davies-Bouldin Index</span>
+            <div class="perf-bar-wrap"><div class="perf-bar" style="--w:82%;--c:#fca5a5"></div></div>
+            <span class="perf-val">0.82</span>
+          </div>
+          <div class="perf-item">
+            <span class="perf-label">Calinski-Harabasz Score</span>
+            <div class="perf-bar-wrap"><div class="perf-bar" style="--w:68%;--c:#d8b4fe"></div></div>
+            <span class="perf-val">681.4</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
