@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Customer Segmentation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+--bg:#1a1f27;
+--surface:#232935;
+--border:rgba(255,255,255,0.08);
+--text:#f1f3f7;
+--text-muted:#a5abc1;
+--accent:#6ee7b7;
+--accent2:#60a5fa;
+--font:'Inter', sans-serif;
+--mono:'JetBrains Mono', monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+font-family:var(--font);
+background:linear-gradient(135deg,#1a1f27,#2a3140);
+color:var(--text);
+min-height:100vh;
+letter-spacing: -0.01em;
+}
+
+/* NAVBAR */
+
+.navbar{
+height:60px;
+display:flex;
+align-items:center;
+padding:0 28px;
+border-bottom:1px solid var(--border);
+}
+
+.brand{
+font-family:var(--mono);
+font-weight:700;
+font-size:13px;
+}
+
+/* HERO */
+
+.hero{
+min-height:calc(100vh - 60px);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:40px;
+}
+
+.hero h1{
+font-family:var(--mono);
+font-size:42px;
+margin-bottom:16px;
+}
+
+.hero p{
+color:var(--text-muted);
+font-size:16px;
+max-width:600px;
+margin-bottom:40px;
+line-height:1.6;
+}
+
+/* BUTTON */
+
+.start-btn{
+
+display:inline-block;
+
+padding:14px 34px;
+
+background:linear-gradient(135deg,#6ee7b7,#60a5fa);
+
+color:#000;
+
+border-radius:8px;
+
+font-family:var(--mono);
+font-weight:700;
+
+text-decoration:none;
+
+transition:.2s;
+
+}
+
+.start-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 25px rgba(110,231,183,.25);
+}
+
+/* FEATURES */
+
+.features{
+
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+
+margin-top:60px;
+max-width:900px;
+width:100%;
+
+}
+
+.feature-card{
+
+background:var(--surface);
+border:1px solid var(--border);
+border-radius:12px;
+
+padding:24px;
+text-align:left;
+
+}
+
+.feature-card h3{
+font-size:16px;
+margin-bottom:6px;
+}
+
+.feature-card p{
+font-size:13px;
+color:var(--text-muted);
+}
+
+.brand-icon {
+  font-size: 20px;
+  color: var(--accent);
+  line-height: 1;
+  filter: drop-shadow(0 0 8px rgba(110,231,183,0.5));
+}
+</style>
+</head>
+
+<body >
+
+<div class="navbar">
+    <span class="brand-icon">⬡</span>
+<div class="brand">Customer Segmentation Dashboard</div>
+</div>
+
+<section class="hero">
+
+<h1>Customer Segmentation AI</h1>
+
+<p>
+Analyze customer behavior using machine learning clustering.
+Identify premium customers, inactive users, and high value segments
+to improve marketing and business decisions.
+</p>
+
+<a href="/dashboard" class="start-btn">
+Start Segmentation →
+</a>
+
+<div class="features">
+
+<div class="feature-card">
+<h3>Customer Analytics</h3>
+<p>Analyze spending patterns and customer engagement behavior.</p>
+</div>
+
+<div class="feature-card">
+<h3>Machine Learning</h3>
+<p>K-Means clustering automatically groups similar customers.</p>
+</div>
+
+<div class="feature-card">
+<h3>Business Insights</h3>
+<p>Identify high value customers and marketing opportunities.</p>
+</div>
+
+</div>
+
+</section>
+
+</body>
+</html>
